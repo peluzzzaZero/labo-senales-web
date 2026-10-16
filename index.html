@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; worker-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="Instrumento local de movimiento y espectro. Sin envío de datos."><title>Labo de señales · instrumento local</title><link rel="icon" href="data:,"><link rel="stylesheet" href="styles.css"></head>
+<body>
+<a class="skip" href="#instrumento">Saltar al instrumento</a>
+<header class="masthead"><a href="#" class="wordmark" aria-label="Labo de señales, inicio"><span aria-hidden="true">∿</span> labo<span class="wordmark-light">de señales</span></a><span class="local-badge"><i aria-hidden="true"></i> LOCAL · SIN ENVÍOS</span></header>
+<main>
+  <section class="intro"><div><p class="eyebrow">MOVIMIENTO / TIEMPO / FRECUENCIA</p><h1>Escucha el movimiento.<br><em>Entiende su ritmo.</em></h1><p class="intro-copy">Un pequeño banco de trabajo para observar muestras y explorar sus frecuencias. Tu señal permanece en esta pestaña.</p></div><div class="intro-note"><span class="technical-number">01—</span><p>Hecho para explorar.<br><strong>Sin diagnóstico ni ML.</strong></p><span class="thin-line"></span><p class="fine">Samsung Galaxy S25: compatibilidad física pendiente de probar.</p></div></section>
+  <section id="instrumento" aria-label="Entrada y análisis de señales">
+    <nav class="input-nav" aria-label="Elegir origen"><button id="mode-device" type="button" data-mode="device" aria-pressed="true"><span>01</span> Sensores del navegador</button><button id="mode-csv" type="button" data-mode="csv" aria-pressed="false"><span>02</span> Importar CSV</button><button id="mode-synthetic" type="button" data-mode="synthetic" aria-pressed="false"><span>03</span> Explorar una fórmula</button></nav>
+    <div class="workspace">
+      <aside class="entry-card">
+        <section id="panel-device" aria-labelledby="device-title">
+          <p class="eyebrow">ADQUISICIÓN VOLUNTARIA</p><h2 id="device-title">Primero, comprobar.<br>Después, medir.</h2><p class="small">La API puede estar presente sin entregar datos. Nada se escucha hasta que pulses Iniciar.</p>
+          <dl id="inventory" class="inventory"></dl>
+          <label for="duration">Duración máxima</label><select id="duration"><option value="10">10 segundos</option><option value="15" selected>15 segundos</option><option value="20">20 segundos</option></select>
+          <div class="capture-actions"><button id="start" class="primary" type="button">Iniciar medición <span aria-hidden="true">↗</span></button><button id="stop" class="secondary" type="button" disabled>Parar</button></div>
+          <div class="capture-monitor"><span id="capture-status">Sin escucha activa.</span><strong id="capture-progress">0 eventos</strong><progress id="capture-meter" max="15" value="0" aria-label="Tiempo de captura"></progress></div>
+          <p class="fine">Sin guardado automático. Parar retira la escucha. Ocultar la pestaña también la detiene. Los valores ausentes siguen siendo ausentes.</p>
+          <details><summary>Qué no puede ofrecer esta vía</summary><p class="small">Barómetro y campo magnético crudo: no disponibles por DeviceMotion. No accede a cámara, micrófono, RF, CSI, IQ, huella ni escáneres de redes. Una API web presente no acredita los sensores del teléfono.</p></details>
+          <p class="connection-note">Las muestras se analizan aquí, sin subirlas. Si esta app se sirve en una web, el alojamiento recibe la visita y su dirección IP. HTTPS y API presente no garantizan datos de sensores: revisa la disponibilidad e inicia solo si quieres medir.</p>
+        </section>
+        <section id="panel-csv" aria-labelledby="csv-title" hidden>
+          <p class="eyebrow">ARCHIVO LOCAL</p><h2 id="csv-title">Trae tus propias<br>muestras.</h2><p class="small">Se lee en memoria; no se envía ni se guarda una copia. Solo aceleración declarada en <strong>m/s²</strong>.</p>
+          <div class="csv-contract"><code>timestamp_ms,x,y,z<br>0,0.1,0.2,9.8<br>20,0.2,0.1,9.7</code><span>Ejemplo de formato, no medición.</span></div>
+          <label for="gravity">Gravedad de la señal</label><select id="gravity"><option value="desconocida">Desconocida / no documentada</option><option value="incluida (declaración)">Incluida, según origen</option><option value="excluida (declaración)">Excluida, según origen</option></select>
+          <label class="contract-check"><input id="csv-confirm" type="checkbox"> <span>Confirmo que el archivo usa milisegundos y m/s². La app no verifica la calibración ni el origen.</span></label>
+          <label for="csv-file" class="file-label">Seleccionar CSV</label><input id="csv-file" type="file" accept=".csv,text/csv"><p class="fine">Coma, cabecera exacta, punto decimal. Entre 2 y 2048 filas, máximo 512 KiB. Sin celdas vacías, duplicados ni timestamps fuera de orden.</p>
+          <p class="small">Las series cortas o irregulares pueden verse en el tiempo; el espectro requiere superar sus propios controles.</p>
+        </section>
+        <section id="panel-synthetic" aria-labelledby="synthetic-title" hidden>
+          <p class="eyebrow synthetic-ink">SEÑAL SINTÉTICA · NO SENSOR</p><h2 id="synthetic-title">Una frecuencia<br>que ya conocemos.</h2><p class="small">Genera una fórmula para explorar picos, duración y aliasing. Nunca se presenta como una captura del móvil.</p>
+          <label for="synthetic-kind">Experimento de fórmula</label><select id="synthetic-kind"><option value="sine">Seno de 5 Hz · tasa 50 Hz</option><option value="mix">Mezcla de 7 + 13 Hz · tasa 100 Hz</option><option value="alias">Aliasing: 32 Hz · tasa 50 Hz</option><option value="short">Ventana corta: 64 muestras</option><option value="irregular">Cadencia irregular deliberada</option></select>
+          <button id="generate" class="primary" type="button">Generar señal sintética <span aria-hidden="true">∿</span></button>
+          <div class="formula-art" aria-hidden="true"><span>y(t) = A sin(2πft)</span><svg viewBox="0 0 240 95"><path d="M0 48 C15 -3 25 -3 40 48 S65 99 80 48 S105 -3 120 48 S145 99 160 48 S185 -3 200 48 S225 99 240 48"/></svg><p>Un patrón. Muchas muestras.</p></div>
+          <p class="fine">Los ejemplos añaden una media de 3 m/s². Antes de la DFT se resta esa media y se aplica una ventana Hann.</p>
+        </section>
+      </aside>
+      <section class="analysis-card" aria-labelledby="analysis-title">
+        <div class="analysis-top"><div><p class="eyebrow">MESA DE ANÁLISIS</p><h2 id="analysis-title">De la muestra al espectro.</h2></div><button id="clear" class="text-button" type="button">Vaciar sesión ↺</button></div>
+        <div id="notice" class="notice" role="status" aria-live="polite">Elige una entrada. No se ha recibido ni generado ninguna señal.</div>
+        <div class="signal-heading"><span id="source-label" class="source-tag">SIN SEÑAL</span><div><label for="channel">Canal único</label><select id="channel" disabled><option>Sin muestras</option></select></div></div>
+        <button id="export" class="text-button" type="button" disabled>Exportar muestras + procedencia (JSON v1)</button>
+        <div class="metrics"><div><span>Muestras</span><strong id="stat-n">—</strong></div><div><span>Tasa efectiva</span><strong id="stat-fs">—</strong></div><div><span>Nyquist</span><strong id="stat-nyquist">—</strong></div><div><span>Pico principal</span><strong id="stat-peak">—</strong></div></div>
+        <figure><figcaption><strong>01 / Señal en el tiempo</strong><span id="time-caption">Sin datos</span></figcaption><div id="time-plot" class="plot"><p class="empty-plot">Cada muestra tiene su instante.<br><span>La gráfica aparecerá cuando haya datos.</span></p></div></figure>
+        <div class="spectrum-heading"><div><h3>02 / Amplitud por frecuencia</h3><p>Media retirada · Hann · DFT de un canal</p></div><button id="analyze" class="primary small-button" type="button" disabled>Calcular espectro</button></div>
+        <div id="frequency-plot" class="plot"><p class="empty-plot">Primero, la calidad del muestreo.<br><span>No se interpola una señal irregular.</span></p></div>
+        <p id="spectrum-summary" class="small spectrum-summary">El espectro no identifica por sí mismo una causa, gesto o avería.</p>
+        <div id="peaks"></div>
+        <details id="quality-details"><summary>Calidad, unidades y límites</summary><div id="quality-report" class="small">Sin muestras para evaluar.</div><p class="fine">Umbrales fijados: 128–2048 muestras, intervalos positivos, variación ≤5%, desviación respecto a la mediana ≤20% y hueco ≤1,5× mediana. Ningún valor ausente en el canal. La tasa usa timestamps, no la cadencia solicitada.</p></details>
+      </section>
+    </div>
+  </section>
+  <section class="footnotes"><p><strong>La frecuencia tiene un límite.</strong> Por encima de la mitad de la tasa de muestreo puede aparecer aliasing. No se recupera lo que no se midió; el filtrado previo del navegador no está acreditado.</p><p><strong>Una herramienta, no una conclusión.</strong> Sin diagnóstico, entrenamiento ni validación comercial. Recargar borra la sesión. No introduzcas información personal en archivos de prueba.</p></section>
+</main><footer><span>LABO DE SEÑALES <span aria-hidden="true">/</span> Instrumento local v1</span><span>Tu dispositivo. Tu sesión. Sin nube.</span></footer>
+<script type="module" src="app.mjs"></script>
+</body></html>
